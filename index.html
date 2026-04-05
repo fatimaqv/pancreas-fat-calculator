@@ -140,10 +140,6 @@
       padding: 16px;
       margin-top: 16px;
     }
-    .box.warning {
-      background: #fff8e8;
-      border-color: #f4d38a;
-    }
     .box.note {
       background: #f4f7fb;
     }
@@ -178,6 +174,13 @@
       line-height: 1.5;
     }
     .hidden { display: none; }
+    a {
+      color: #1d4ed8;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
@@ -238,11 +241,6 @@
                 <button class="secondary-btn" onclick="resetForm()" id="resetBtn"></button>
               </div>
 
-              <div class="box warning">
-                <h3 id="warningTitle"></h3>
-                <ul id="warningList"></ul>
-              </div>
-
               <div class="box note">
                 <h3 id="roiTitle"></h3>
                 <ul id="roiList"></ul>
@@ -267,6 +265,7 @@
               <div class="box note">
                 <h3 id="importantNoteTitle"></h3>
                 <p id="importantNoteText" class="small"></p>
+                <p id="referenceText" class="small" style="margin-top:10px;"></p>
               </div>
             </div>
           </div>
@@ -283,7 +282,7 @@
         landingSubtitle: "Herramienta educativa basada en consenso 2026 para promediar ROI de cabeza, cuerpo y cola y clasificar el resultado.",
         selectLanguageLabel: "Seleccione el idioma de inicio",
         appTitle: "Calculadora orientativa de grasa pancreática",
-        appSubtitle: "Promedio de ROI en cabeza, cuerpo y cola con clasificación orientativa acorde al consenso 2026.",
+        appSubtitle: "Promedio de ROI en cabeza, cuerpo y cola mediante MRI-PDFF por RMN, con clasificación orientativa acorde al consenso 2026.",
         backBtn: "Volver al inicio",
         switchBtn: "Cambiar a English",
         calcSectionTitle: "Ingreso de valores",
@@ -292,19 +291,12 @@
         tailLabel: "ROI cola (%)",
         calcBtn: "Calcular",
         resetBtn: "Limpiar",
-        warningTitle: "Advertencias de medición",
-        warnings: [
-          "Evitar conductos pancreáticos, vasos y grasa peripancreática.",
-          "No incluir lesiones, quistes, calcificaciones ni áreas no parenquimatosas.",
-          "Interpretar con cautela si existe marcada heterogeneidad regional.",
-          "La clasificación es orientativa y no reemplaza la evaluación radiológica integral."
-        ],
         roiTitle: "Sugerencias de ubicación de ROI",
         roiTips: [
           "Cabeza: ubicar el ROI en parénquima cefálico, evitando el colédoco, Wirsung y vasos adyacentes.",
           "Cuerpo: colocar el ROI en parénquima central, evitando vasos esplénicos y bordes mal definidos.",
           "Cola: medir en parénquima caudal, evitando volumen parcial con grasa peripancreática o bazo.",
-          "Siempre que sea posible, usar ROI amplios dentro del parénquima."
+          "Tamaño del ROI: utilizar ROI lo más amplios posible dentro del parénquima pancreático."
         ],
         resultTitle: "Resultado",
         avgLabel: "PDFF promedio",
@@ -320,7 +312,8 @@
           "> 30%: severo"
         ],
         importantNoteTitle: "Nota importante",
-        importantNoteText: "Clasificación orientativa basada en consenso internacional 2026. No constituye un criterio diagnóstico universalmente validado ni debe utilizarse de manera aislada para la toma de decisiones clínicas.",
+        importantNoteText: "Esta herramienta está diseñada para valores obtenidos mediante MRI-PDFF por resonancia magnética. No debe aplicarse a mediciones por TC u otras técnicas. La clasificación es orientativa y se basa en el consenso internacional 2026, sin constituir un criterio diagnóstico universalmente validado.",
+        referenceText: 'Referencia: <a href="https://doi.org/10.1002/ueg2.70185" target="_blank">Consenso internacional sobre páncreas graso 2026</a>.',
         invalid: "Ingrese valores numéricos válidos en cabeza, cuerpo y cola."
       },
       en: {
@@ -328,7 +321,7 @@
         landingSubtitle: "Educational tool based on the 2026 consensus to average head, body, and tail ROI values and classify the result.",
         selectLanguageLabel: "Select the starting language",
         appTitle: "Pancreatic fat educational calculator",
-        appSubtitle: "Average ROI values from head, body, and tail with consensus-based orientation grading.",
+        appSubtitle: "Average ROI values from head, body, and tail using MRI-PDFF by MRI, with consensus-based orientation grading.",
         backBtn: "Back to start",
         switchBtn: "Cambiar a Español",
         calcSectionTitle: "Value entry",
@@ -337,19 +330,12 @@
         tailLabel: "Tail ROI (%)",
         calcBtn: "Calculate",
         resetBtn: "Reset",
-        warningTitle: "Measurement warnings",
-        warnings: [
-          "Avoid pancreatic ducts, vessels, and peripancreatic fat.",
-          "Do not include lesions, cysts, calcifications, or non-parenchymal areas.",
-          "Interpret with caution when marked regional heterogeneity is present.",
-          "This grading is educational and does not replace full radiologic assessment."
-        ],
         roiTitle: "ROI placement suggestions",
         roiTips: [
           "Head: place the ROI within pancreatic head parenchyma, avoiding bile duct, main pancreatic duct, and adjacent vessels.",
           "Body: place the ROI in central parenchyma, avoiding splenic vessels and ill-defined borders.",
           "Tail: place the ROI in caudal parenchyma, avoiding partial volume with peripancreatic fat or spleen.",
-          "Whenever possible, use large ROIs within the pancreatic parenchyma."
+          "ROI size: use the largest possible ROIs within the pancreatic parenchyma."
         ],
         resultTitle: "Result",
         avgLabel: "Average PDFF",
@@ -365,7 +351,8 @@
           "> 30%: severe"
         ],
         importantNoteTitle: "Important note",
-        importantNoteText: "Educational classification based on the 2026 international consensus. It is not a universally validated diagnostic criterion and should not be used in isolation for clinical decision-making.",
+        importantNoteText: "This tool is intended for values obtained by MRI-PDFF on magnetic resonance imaging. It should not be applied to CT-derived measurements or other techniques. The classification is educational and based on the 2026 international consensus, without constituting a universally validated diagnostic criterion.",
+        referenceText: 'Reference: <a href="https://doi.org/10.1002/ueg2.70185" target="_blank">2026 international fatty pancreas consensus</a>.',
         invalid: "Please enter valid numeric values for head, body, and tail."
       }
     };
@@ -411,15 +398,14 @@
       document.getElementById("calcBtn").textContent = t.calcBtn;
       document.getElementById("resetBtn").textContent = t.resetBtn;
 
-      document.getElementById("warningTitle").textContent = t.warningTitle;
       document.getElementById("roiTitle").textContent = t.roiTitle;
       document.getElementById("resultTitle").textContent = t.resultTitle;
       document.getElementById("avgLabel").textContent = t.avgLabel;
       document.getElementById("classificationTitle").textContent = t.classificationTitle;
       document.getElementById("importantNoteTitle").textContent = t.importantNoteTitle;
       document.getElementById("importantNoteText").textContent = t.importantNoteText;
+      document.getElementById("referenceText").innerHTML = t.referenceText;
 
-      fillList("warningList", t.warnings);
       fillList("roiList", t.roiTips);
       fillList("classificationList", t.classificationItems);
     }
