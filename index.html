@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Calculadora MRI-PDFF</title>
+<style>
+body { font-family: Arial; text-align:center; padding:40px; background:#f4f4f4;}
+.container { background:white; padding:30px; border-radius:10px; max-width:400px; margin:auto;}
+input { margin:10px; padding:10px; width:80%;}
+button { padding:10px 20px; margin-top:10px;}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Calculadora de grasa pancreática</h2>
+
+<input id="cabeza" placeholder="ROI cabeza (%)"><br>
+<input id="cuerpo" placeholder="ROI cuerpo (%)"><br>
+<input id="cola" placeholder="ROI cola (%)"><br>
+
+<button onclick="calcular()">Calcular</button>
+
+<h3 id="resultado"></h3>
+
+<p style="font-size:12px;">
+Basado en consenso 2026. Uso educativo.
+</p>
+
+</div>
+
+<script>
+function calcular() {
+let c = parseFloat(document.getElementById("cabeza").value);
+let b = parseFloat(document.getElementById("cuerpo").value);
+let t = parseFloat(document.getElementById("cola").value);
+
+if (isNaN(c) || isNaN(b) || isNaN(t)) {
+document.getElementById("resultado").innerText = "Ingresá valores válidos";
+return;
+}
+
+let promedio = (c + b + t) / 3;
+let categoria = "";
+
+if (promedio < 6) categoria = "Por debajo del umbral";
+else if (promedio <= 15) categoria = "Leve";
+else if (promedio <= 30) categoria = "Moderado";
+else categoria = "Severo";
+
+document.getElementById("resultado").innerText =
+"PDFF: " + promedio.toFixed(1) + "% → " + categoria;
+}
+</script>
+
+</body>
+</html>
