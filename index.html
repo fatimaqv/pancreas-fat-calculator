@@ -1,59 +1,503 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<title>Calculadora MRI-PDFF</title>
-<style>
-body { font-family: Arial; text-align:center; padding:40px; background:#f4f4f4;}
-.container { background:white; padding:30px; border-radius:10px; max-width:400px; margin:auto;}
-input { margin:10px; padding:10px; width:80%;}
-button { padding:10px 20px; margin-top:10px;}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calculadora de grasa pancreática por MRI-PDFF</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f3f5f7;
+      color: #1f2937;
+    }
+    .wrap {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .card {
+      width: 100%;
+      max-width: 900px;
+      background: white;
+      border-radius: 18px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+      overflow: hidden;
+    }
+    .header {
+      background: #294b59;
+      color: white;
+      padding: 28px;
+    }
+    .header h1 {
+      margin: 0 0 10px 0;
+      font-size: 30px;
+      line-height: 1.2;
+    }
+    .header p {
+      margin: 0;
+      font-size: 16px;
+      color: #e6edf1;
+    }
+    .content {
+      padding: 28px;
+    }
+    .lang-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-top: 24px;
+    }
+    .lang-btn, .main-btn, .secondary-btn {
+      border: none;
+      border-radius: 14px;
+      padding: 14px 18px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .lang-btn {
+      background: #f8fafc;
+      border: 1px solid #d1d5db;
+      text-align: left;
+    }
+    .lang-btn:hover {
+      background: #eef3f6;
+    }
+    .main-btn {
+      background: #294b59;
+      color: white;
+    }
+    .main-btn:hover {
+      background: #203c47;
+    }
+    .secondary-btn {
+      background: #eef2f7;
+      color: #111827;
+    }
+    .secondary-btn:hover {
+      background: #e2e8f0;
+    }
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 20px;
+    }
+    @media (max-width: 800px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .panel {
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
+      padding: 20px;
+      background: #fff;
+    }
+    .panel h2 {
+      margin-top: 0;
+      font-size: 22px;
+    }
+    .panel h3 {
+      margin-bottom: 10px;
+      font-size: 17px;
+    }
+    .field {
+      margin-bottom: 14px;
+    }
+    .field label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+    .field input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 12px;
+      font-size: 15px;
+    }
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+    .box {
+      background: #f8fafc;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 16px;
+      margin-top: 16px;
+    }
+    .box.warning {
+      background: #fff8e8;
+      border-color: #f4d38a;
+    }
+    .box.note {
+      background: #f4f7fb;
+    }
+    ul {
+      margin: 8px 0 0 18px;
+      padding: 0;
+    }
+    li {
+      margin-bottom: 8px;
+      line-height: 1.4;
+    }
+    .result-number {
+      font-size: 38px;
+      font-weight: 700;
+      margin: 6px 0 10px 0;
+    }
+    .badge {
+      display: inline-block;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+    .below { background: #e5e7eb; color: #111827; }
+    .mild { background: #dbeafe; color: #1d4ed8; }
+    .moderate { background: #fef3c7; color: #92400e; }
+    .severe { background: #fee2e2; color: #b91c1c; }
+    .small {
+      font-size: 13px;
+      color: #4b5563;
+      line-height: 1.5;
+    }
+    .hidden { display: none; }
+  </style>
 </head>
-
 <body>
+  <div class="wrap">
+    <div class="card">
+      <div id="landingScreen">
+        <div class="header">
+          <h1 id="landingTitle"></h1>
+          <p id="landingSubtitle"></p>
+        </div>
+        <div class="content">
+          <h2 id="selectLanguageLabel" style="margin-top:0;"></h2>
+          <div class="lang-grid">
+            <button class="lang-btn" onclick="enterApp('es')">
+              <strong>Español</strong><br>
+              <span class="small">Versión en español</span>
+            </button>
+            <button class="lang-btn" onclick="enterApp('en')">
+              <strong>English</strong><br>
+              <span class="small">English version</span>
+            </button>
+          </div>
+        </div>
+      </div>
 
-<div class="container">
+      <div id="appScreen" class="hidden">
+        <div class="header">
+          <h1 id="appTitle"></h1>
+          <p id="appSubtitle"></p>
+        </div>
+        <div class="content">
+          <div class="topbar">
+            <button class="secondary-btn" onclick="goBack()" id="backBtn"></button>
+            <button class="secondary-btn" onclick="toggleLanguage()" id="switchBtn"></button>
+          </div>
 
-<h2>Calculadora de grasa pancreática</h2>
+          <div class="grid">
+            <div class="panel">
+              <h2 id="calcSectionTitle"></h2>
 
-<input id="cabeza" placeholder="ROI cabeza (%)"><br>
-<input id="cuerpo" placeholder="ROI cuerpo (%)"><br>
-<input id="cola" placeholder="ROI cola (%)"><br>
+              <div class="field">
+                <label id="headLabel" for="head"></label>
+                <input id="head" type="number" step="0.1" placeholder="0.0" />
+              </div>
 
-<button onclick="calcular()">Calcular</button>
+              <div class="field">
+                <label id="bodyLabel" for="body"></label>
+                <input id="body" type="number" step="0.1" placeholder="0.0" />
+              </div>
 
-<h3 id="resultado"></h3>
+              <div class="field">
+                <label id="tailLabel" for="tail"></label>
+                <input id="tail" type="number" step="0.1" placeholder="0.0" />
+              </div>
 
-<p style="font-size:12px;">
-Basado en consenso 2026. Uso educativo.
-</p>
+              <div class="actions">
+                <button class="main-btn" onclick="calculate()" id="calcBtn"></button>
+                <button class="secondary-btn" onclick="resetForm()" id="resetBtn"></button>
+              </div>
 
-</div>
+              <div class="box warning">
+                <h3 id="warningTitle"></h3>
+                <ul id="warningList"></ul>
+              </div>
 
-<script>
-function calcular() {
-let c = parseFloat(document.getElementById("cabeza").value);
-let b = parseFloat(document.getElementById("cuerpo").value);
-let t = parseFloat(document.getElementById("cola").value);
+              <div class="box note">
+                <h3 id="roiTitle"></h3>
+                <ul id="roiList"></ul>
+              </div>
+            </div>
 
-if (isNaN(c) || isNaN(b) || isNaN(t)) {
-document.getElementById("resultado").innerText = "Ingresá valores válidos";
-return;
-}
+            <div class="panel">
+              <h2 id="resultTitle"></h2>
 
-let promedio = (c + b + t) / 3;
-let categoria = "";
+              <div class="box">
+                <div id="avgLabel" class="small"></div>
+                <div id="averageValue" class="result-number">—</div>
+                <span id="categoryBadge" class="badge below">—</span>
+                <p id="resultText" style="margin-top:6px; line-height:1.5;"></p>
+              </div>
 
-if (promedio < 6) categoria = "Por debajo del umbral";
-else if (promedio <= 15) categoria = "Leve";
-else if (promedio <= 30) categoria = "Moderado";
-else categoria = "Severo";
+              <div class="box note">
+                <h3 id="classificationTitle"></h3>
+                <ul id="classificationList"></ul>
+              </div>
 
-document.getElementById("resultado").innerText =
-"PDFF: " + promedio.toFixed(1) + "% → " + categoria;
-}
-</script>
+              <div class="box note">
+                <h3 id="importantNoteTitle"></h3>
+                <p id="importantNoteText" class="small"></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
+    </div>
+  </div>
+
+  <script>
+    const text = {
+      es: {
+        landingTitle: "Calculadora orientativa de grasa pancreática por MRI-PDFF",
+        landingSubtitle: "Herramienta educativa basada en consenso 2026 para promediar ROI de cabeza, cuerpo y cola y clasificar el resultado.",
+        selectLanguageLabel: "Seleccione el idioma de inicio",
+        appTitle: "Calculadora orientativa de grasa pancreática",
+        appSubtitle: "Promedio de ROI en cabeza, cuerpo y cola con clasificación orientativa acorde al consenso 2026.",
+        backBtn: "Volver al inicio",
+        switchBtn: "Cambiar a English",
+        calcSectionTitle: "Ingreso de valores",
+        headLabel: "ROI cabeza (%)",
+        bodyLabel: "ROI cuerpo (%)",
+        tailLabel: "ROI cola (%)",
+        calcBtn: "Calcular",
+        resetBtn: "Limpiar",
+        warningTitle: "Advertencias de medición",
+        warnings: [
+          "Evitar conductos pancreáticos, vasos y grasa peripancreática.",
+          "No incluir lesiones, quistes, calcificaciones ni áreas no parenquimatosas.",
+          "Interpretar con cautela si existe marcada heterogeneidad regional.",
+          "La clasificación es orientativa y no reemplaza la evaluación radiológica integral."
+        ],
+        roiTitle: "Sugerencias de ubicación de ROI",
+        roiTips: [
+          "Cabeza: ubicar el ROI en parénquima cefálico, evitando el colédoco, Wirsung y vasos adyacentes.",
+          "Cuerpo: colocar el ROI en parénquima central, evitando vasos esplénicos y bordes mal definidos.",
+          "Cola: medir en parénquima caudal, evitando volumen parcial con grasa peripancreática o bazo.",
+          "Siempre que sea posible, usar ROI amplios dentro del parénquima."
+        ],
+        resultTitle: "Resultado",
+        avgLabel: "PDFF promedio",
+        resultBelow: "Por debajo del umbral sugerido para páncreas graso.",
+        resultMild: "Valor compatible con páncreas graso leve.",
+        resultModerate: "Valor compatible con páncreas graso moderado.",
+        resultSevere: "Valor compatible con páncreas graso severo.",
+        classificationTitle: "Clasificación orientativa por consenso",
+        classificationItems: [
+          "< 6%: por debajo del umbral sugerido",
+          "6%–15%: leve",
+          "16%–30%: moderado",
+          "> 30%: severo"
+        ],
+        importantNoteTitle: "Nota importante",
+        importantNoteText: "Clasificación orientativa basada en consenso internacional 2026. No constituye un criterio diagnóstico universalmente validado ni debe utilizarse de manera aislada para la toma de decisiones clínicas.",
+        invalid: "Ingrese valores numéricos válidos en cabeza, cuerpo y cola."
+      },
+      en: {
+        landingTitle: "Pancreatic fat educational calculator by MRI-PDFF",
+        landingSubtitle: "Educational tool based on the 2026 consensus to average head, body, and tail ROI values and classify the result.",
+        selectLanguageLabel: "Select the starting language",
+        appTitle: "Pancreatic fat educational calculator",
+        appSubtitle: "Average ROI values from head, body, and tail with consensus-based orientation grading.",
+        backBtn: "Back to start",
+        switchBtn: "Cambiar a Español",
+        calcSectionTitle: "Value entry",
+        headLabel: "Head ROI (%)",
+        bodyLabel: "Body ROI (%)",
+        tailLabel: "Tail ROI (%)",
+        calcBtn: "Calculate",
+        resetBtn: "Reset",
+        warningTitle: "Measurement warnings",
+        warnings: [
+          "Avoid pancreatic ducts, vessels, and peripancreatic fat.",
+          "Do not include lesions, cysts, calcifications, or non-parenchymal areas.",
+          "Interpret with caution when marked regional heterogeneity is present.",
+          "This grading is educational and does not replace full radiologic assessment."
+        ],
+        roiTitle: "ROI placement suggestions",
+        roiTips: [
+          "Head: place the ROI within pancreatic head parenchyma, avoiding bile duct, main pancreatic duct, and adjacent vessels.",
+          "Body: place the ROI in central parenchyma, avoiding splenic vessels and ill-defined borders.",
+          "Tail: place the ROI in caudal parenchyma, avoiding partial volume with peripancreatic fat or spleen.",
+          "Whenever possible, use large ROIs within the pancreatic parenchyma."
+        ],
+        resultTitle: "Result",
+        avgLabel: "Average PDFF",
+        resultBelow: "Below the suggested threshold for fatty pancreas.",
+        resultMild: "Value compatible with mild fatty pancreas.",
+        resultModerate: "Value compatible with moderate fatty pancreas.",
+        resultSevere: "Value compatible with severe fatty pancreas.",
+        classificationTitle: "Consensus-based orientation grading",
+        classificationItems: [
+          "< 6%: below suggested threshold",
+          "6%–15%: mild",
+          "16%–30%: moderate",
+          "> 30%: severe"
+        ],
+        importantNoteTitle: "Important note",
+        importantNoteText: "Educational classification based on the 2026 international consensus. It is not a universally validated diagnostic criterion and should not be used in isolation for clinical decision-making.",
+        invalid: "Please enter valid numeric values for head, body, and tail."
+      }
+    };
+
+    let currentLang = "es";
+
+    function enterApp(lang) {
+      currentLang = lang;
+      applyText();
+      document.getElementById("landingScreen").classList.add("hidden");
+      document.getElementById("appScreen").classList.remove("hidden");
+    }
+
+    function goBack() {
+      document.getElementById("appScreen").classList.add("hidden");
+      document.getElementById("landingScreen").classList.remove("hidden");
+      applyText();
+    }
+
+    function toggleLanguage() {
+      currentLang = currentLang === "es" ? "en" : "es";
+      applyText();
+      updateResultIfPresent();
+    }
+
+    function applyText() {
+      const t = text[currentLang];
+
+      document.documentElement.lang = currentLang;
+
+      document.getElementById("landingTitle").textContent = t.landingTitle;
+      document.getElementById("landingSubtitle").textContent = t.landingSubtitle;
+      document.getElementById("selectLanguageLabel").textContent = t.selectLanguageLabel;
+
+      document.getElementById("appTitle").textContent = t.appTitle;
+      document.getElementById("appSubtitle").textContent = t.appSubtitle;
+      document.getElementById("backBtn").textContent = t.backBtn;
+      document.getElementById("switchBtn").textContent = t.switchBtn;
+      document.getElementById("calcSectionTitle").textContent = t.calcSectionTitle;
+      document.getElementById("headLabel").textContent = t.headLabel;
+      document.getElementById("bodyLabel").textContent = t.bodyLabel;
+      document.getElementById("tailLabel").textContent = t.tailLabel;
+      document.getElementById("calcBtn").textContent = t.calcBtn;
+      document.getElementById("resetBtn").textContent = t.resetBtn;
+
+      document.getElementById("warningTitle").textContent = t.warningTitle;
+      document.getElementById("roiTitle").textContent = t.roiTitle;
+      document.getElementById("resultTitle").textContent = t.resultTitle;
+      document.getElementById("avgLabel").textContent = t.avgLabel;
+      document.getElementById("classificationTitle").textContent = t.classificationTitle;
+      document.getElementById("importantNoteTitle").textContent = t.importantNoteTitle;
+      document.getElementById("importantNoteText").textContent = t.importantNoteText;
+
+      fillList("warningList", t.warnings);
+      fillList("roiList", t.roiTips);
+      fillList("classificationList", t.classificationItems);
+    }
+
+    function fillList(id, items) {
+      const ul = document.getElementById(id);
+      ul.innerHTML = "";
+      items.forEach(item => {
+        const li = document.createElement("li");
+        li.textContent = item;
+        ul.appendChild(li);
+      });
+    }
+
+    function calculate() {
+      const t = text[currentLang];
+      const head = parseFloat(document.getElementById("head").value);
+      const body = parseFloat(document.getElementById("body").value);
+      const tail = parseFloat(document.getElementById("tail").value);
+
+      if (isNaN(head) || isNaN(body) || isNaN(tail)) {
+        document.getElementById("averageValue").textContent = "—";
+        const badge = document.getElementById("categoryBadge");
+        badge.textContent = "—";
+        badge.className = "badge below";
+        document.getElementById("resultText").textContent = t.invalid;
+        return;
+      }
+
+      const avg = (head + body + tail) / 3;
+      let label = "";
+      let badgeClass = "";
+      let resultText = "";
+
+      if (avg < 6) {
+        label = currentLang === "es" ? "Por debajo del umbral" : "Below threshold";
+        badgeClass = "below";
+        resultText = t.resultBelow;
+      } else if (avg <= 15) {
+        label = currentLang === "es" ? "Leve" : "Mild";
+        badgeClass = "mild";
+        resultText = t.resultMild;
+      } else if (avg <= 30) {
+        label = currentLang === "es" ? "Moderado" : "Moderate";
+        badgeClass = "moderate";
+        resultText = t.resultModerate;
+      } else {
+        label = currentLang === "es" ? "Severo" : "Severe";
+        badgeClass = "severe";
+        resultText = t.resultSevere;
+      }
+
+      document.getElementById("averageValue").textContent = avg.toFixed(1) + "%";
+      const badge = document.getElementById("categoryBadge");
+      badge.textContent = label;
+      badge.className = "badge " + badgeClass;
+      document.getElementById("resultText").textContent = resultText;
+    }
+
+    function updateResultIfPresent() {
+      const current = document.getElementById("averageValue").textContent;
+      if (current !== "—") {
+        calculate();
+      }
+    }
+
+    function resetForm() {
+      document.getElementById("head").value = "";
+      document.getElementById("body").value = "";
+      document.getElementById("tail").value = "";
+      document.getElementById("averageValue").textContent = "—";
+      const badge = document.getElementById("categoryBadge");
+      badge.textContent = "—";
+      badge.className = "badge below";
+      document.getElementById("resultText").textContent = "";
+    }
+
+    applyText();
+  </script>
 </body>
 </html>
